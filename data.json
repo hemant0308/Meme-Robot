@@ -1,8 +1,33 @@
 {
 	"urlFormat":"https://www.facebook.com/pages_reaction_units/more/?page_id={{pageId}}&cursor=%7B%22card_id%22%3A%22page_posts_divider%22%2C%22has_next_page%22%3Atrue%7D&surface=www_pages_home&unit_count={{postsCount}}&fd_referrer_ui_surface=external&fb_dtsg_ag&__user=0&__a=1&__req=l&__be=1&__pc=PHASED%3ADEFAULT&dpr=1&__rev=1000933817&__s=%3A67rsz6%3Aud8z79&__spin_r=1000933817&__spin_b=trunk&__spin_t=1562951267",
 	"pagesData":[
-		{"pageName":"CAPDT","pageId":"457127117670835"}
+		{"pageName":"CAPDT","pageId":"457127117670835"},
+		{"pageName":"Controversyy","pageId":"177158955785723"},
+		{"pageName":"Thyview","pageId":"467199086709317"},
+		{"pageName":"dispagevllentertainuu","pageId":"187402388011546"},
+		{"pageName":"socalledcinema","pageId":"153973581420272"},
+		{"pageName":"AitheyEntiV2","pageId":"141978656476472"},
+		{"pageName":"TeamArehoo","pageId":"196017361098789"},
+		{"pageName":"neekundirothugs","pageId":"1017004565136986"},
+		{"pageName":"TeluguSwag.TS","pageId":"311308786011760"},
+		{"pageName":"yatakaramofficial","pageId":"250774718957802"},
+		{"pageName":"AyyaBaboy","pageId":"2206019773010445"},
+		{"pageName":"Thugwala","pageId":"363598167440039"},
+		{"pageName":"etctelugu","pageId":"1349147275176186"},
+		{"pageName":"Arey-Thuppas-Yedava-228495601258184","pageId":"228495601258184"},
+		{"pageName":"funclovita","pageId":"179324409365685"},
+		{"pageName":"teeyagundi.co.in","pageId":"473179426757346"},
+		{"pageName":"/CO-FUN-408653969685800","pageId":"408653969685800"},
+		{"pageName":"ComiccRayudu","pageId":"171099957157706"}
 	],	
-	"timeDuration":1800
+	"timeDuration":18000,
+	"deviation":41400,
+	"logoutUrl":"https://www.facebook.com/login/device-based/regular/logout/?button_name=logout&button_location=settings",
+	"loginUrl":"https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&lwv=110",
+	"pageUrl":"https://www.facebook.com/Meme-Robot-357645674920671",
+	"indexUrl":"https://www.facebook.com",
+	"username":"rathnayak.fake@gmail.com",
+	"password":"344894ghs",
+	"noOfThreads":5,
+	"postsChunk":2
 }
-

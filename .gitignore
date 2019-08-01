@@ -1,1 +1,6 @@
-images/*
+__pycache__
+images
+logs
+env/*
+env
+*.egg-info

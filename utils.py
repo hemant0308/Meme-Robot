@@ -17,8 +17,15 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from PIL import Image
 
+from datetime import datetime
+
 data = {}
 
+def print_log(msg):
+	msg = datetime.now().strftime("%m-%d-%Y, %H:%M:%S :: ")+str(msg) +"\n"
+	f = open("logs/meme-robot.log","a+")
+	f.write(msg)
+	f.close()
 
 def parse_str(raw_str, page_name):
 	posts = []
@@ -45,13 +52,13 @@ def parse_str(raw_str, page_name):
 	                              share_count, page_name)
 	            posts.append(post)
 	        except Exception as e:
-	            print(pageName)
-	            print(e)
+	            print_log(pageName)
+	            print_log(e)
 	            pass
 	        index = index + 1
 	except Exception as e:
-		print(page_name)
-		print(e)
+		print_log(page_name)
+		print_log(e)
 	return posts
 
 
@@ -101,12 +108,12 @@ def get_page_posts(page_id, page_name):
             if(post.img_src is not None):
                 filtered_posts.append(post)
         if len(filtered_posts) == len(prev_filtered_posts):
-            print("No more posts")
+            print_log("No more posts")
             break
         prev_filtered_posts = filtered_posts
         if exceeded_count > 1:
             is_all_fetched = True
-            print("All fetched")
+            print_log("All fetched")
             break
         posts_count = posts_count+data['postsChunk']
     total_posts_array = []
@@ -147,7 +154,7 @@ class FbPost(object):
             else:
                 return int(reach_count_str)
         except ValueError as e:
-            print(e)
+            print_log(e)
             return 0
 
     def __str__(self):
@@ -175,7 +182,7 @@ def get_top_posts(_data):
     for thread in threads:
     	thread.join()
     posts.sort(key=lambda a: a.reach_count, reverse=True)
-    print("Total posts Count : {}".format(len(posts)))
+    print_log("Total posts Count : {}".format(len(posts)))
     if len(posts) > 2:
     	return posts[:2] + [random.choice(posts[2:])]
     else:

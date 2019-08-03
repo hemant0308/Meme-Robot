@@ -10,6 +10,7 @@ import html
 import json
 import random
 import math
+from datetime import datetime
 
 import requests
 import selenium
@@ -17,49 +18,52 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from PIL import Image
 
-from datetime import datetime
+import smtplib,ssl
 
+dir_path = os.path.dirname(os.path.realpath(__file__))
 data = {}
-
-def print_log(msg):
-	msg = datetime.now().strftime("%m-%d-%Y, %H:%M:%S :: ")+str(msg) +"\n"
-	f = open("logs/meme-robot.log","a+")
-	f.write(msg)
-	f.close()
+def print_log(*args):
+    f = open(os.path.join(dir_path,"logs/meme-robot.log"),"a+")
+    msg = ''
+    for i in args:
+        msg = msg + str(i)
+    msg = datetime.now().strftime("%m-%d-%Y, %H:%M:%S :: ")+str(msg) +"\n"
+    f.write(msg)
+    f.close()
 
 def parse_str(raw_str, page_name):
-	posts = []
-	try:
-	    json_data = json.loads(raw_str)
-	    html_str = json_data['domops'][0][3]['__html']
-	    html_str = html.unescape(html_str)
-	    htmltree = parser.fromstring(html_str)
-	    posts_el = htmltree.cssselect(".userContentWrapper")
-	    data_array = json_data['jsmods']['pre_display_requires']
-	    array_len = len(data_array)
-	    posts_count = int(array_len/2)
+    posts = []
+    try:
+        json_data = json.loads(raw_str)
+        html_str = json_data['domops'][0][3]['__html']
+        html_str = html.unescape(html_str)
+        htmltree = parser.fromstring(html_str)
+        posts_el = htmltree.cssselect(".userContentWrapper")
+        data_array = json_data['jsmods']['pre_display_requires']
+        array_len = len(data_array)
+        posts_count = int(array_len/2)
 
-	    index = 0
-	    for post_el in posts_el:
-	        try:
-	            post = get_post(post_el)
-	            feedback_obj = data_array[posts_count +
-	                                      index][3][1]['__bbox']['result']['data']['feedback']
-	            comment_count = feedback_obj['i18n_comment_count']
-	            reaction_count = feedback_obj['i18n_reaction_count']
-	            share_count = feedback_obj['i18n_share_count']
-	            post.set_feedback(comment_count, reaction_count,
-	                              share_count, page_name)
-	            posts.append(post)
-	        except Exception as e:
-	            print_log(pageName)
-	            print_log(e)
-	            pass
-	        index = index + 1
-	except Exception as e:
-		print_log(page_name)
-		print_log(e)
-	return posts
+        index = 0
+        for post_el in posts_el:
+            try:
+                post = get_post(post_el)
+                feedback_obj = data_array[posts_count +
+                                          index][3][1]['__bbox']['result']['data']['feedback']
+                comment_count = feedback_obj['i18n_comment_count']
+                reaction_count = feedback_obj['i18n_reaction_count']
+                share_count = feedback_obj['i18n_share_count']
+                post.set_feedback(comment_count, reaction_count,
+                                  share_count, page_name)
+                posts.append(post)
+            except Exception as e:
+                print_log(pageName)
+                print_log(e)
+                pass
+            index = index + 1
+    except Exception as e:
+        print_log(page_name)
+        print_log(e)
+    return posts
 
 
 def get_el_text_by_css(el, css):
@@ -118,8 +122,8 @@ def get_page_posts(page_id, page_name):
         posts_count = posts_count+data['postsChunk']
     total_posts_array = []
     for post in prev_filtered_posts:
-    	if post.posted_time >= current_time - (data['timeDuration']):
-    		total_posts_array.append(post)
+        if post.posted_time >= current_time - (data['timeDuration']):
+            total_posts_array.append(post)
     return total_posts_array
 
 
@@ -166,7 +170,7 @@ def get_page_posts_by_pageIds(pagesData,total_posts_array=[]):
     for page in pagesData:
         posts = get_page_posts(page['pageId'], page['pageName'])
         for post in posts:
-        	total_posts_array.append(post)
+            total_posts_array.append(post)
 
 def get_top_posts(_data):
     global data
@@ -176,17 +180,18 @@ def get_top_posts(_data):
     posts = []
     threads = []
     for chunk in chunks:
-    	thread = threading.Thread(target=get_page_posts_by_pageIds, args=(chunk,posts,))
-    	thread.start()
-    	threads.append(thread)
+        thread = threading.Thread(target=get_page_posts_by_pageIds, args=(chunk,posts,))
+        thread.start()
+        threads.append(thread)
     for thread in threads:
-    	thread.join()
+        thread.join()
     posts.sort(key=lambda a: a.reach_count, reverse=True)
     print_log("Total posts Count : {}".format(len(posts)))
-    if len(posts) > 2:
-    	return posts[:2] + [random.choice(posts[2:])]
-    else:
-	    return posts[:2]
+    sent_count = min(int(len(posts)*.3),10)
+    sent_count = max(sent_count,len(posts)) if sent_count < 3 else sent_count
+    top_count = int(sent_count/2)
+    random_count = sent_count - top_count
+    return posts[:top_count] + random.sample(posts[top_count:],random_count)
 
 def construct_url(page_id, posts_count):
     url = data["urlFormat"]
@@ -194,21 +199,38 @@ def construct_url(page_id, posts_count):
 
 
 def get_random_chunks(pageIds):
-	no_of_threads = data["noOfThreads"]
-	random.shuffle(pageIds)
-	chunk_size = math.ceil(len(pageIds)/no_of_threads)
-	remainder = len(pageIds) % no_of_threads
-	iterator = 0
-	chunks_count = no_of_threads
-	while chunks_count > 1:
-	    yield pageIds[iterator:(iterator+chunk_size)]
-	    chunks_count = chunks_count - 1
-	    remainder = remainder - 1
-	    iterator = iterator + chunk_size
-	    if remainder == 0:
-	        chunk_size = chunk_size - 1
-	yield pageIds[iterator:]
+    no_of_threads = data["noOfThreads"]
+    random.shuffle(pageIds)
+    chunk_size = math.ceil(len(pageIds)/no_of_threads)
+    remainder = len(pageIds) % no_of_threads
+    iterator = 0
+    chunks_count = no_of_threads
+    while chunks_count > 1:
+        yield pageIds[iterator:(iterator+chunk_size)]
+        chunks_count = chunks_count - 1
+        remainder = remainder - 1
+        iterator = iterator + chunk_size
+        if remainder == 0:
+            chunk_size = chunk_size - 1
+    yield pageIds[iterator:]
 
+def send_mail(posts):
+    port = 587  # For starttls
+    smtp_server = "smtp.gmail.com"
+    sender_email = "hemant0328@gmail.com"
+    receiver_email = "hemant0328@gmail.com"
+    password = "vnulmsovcfajklyr"
+    message = """
+    Subject : Last half an our top posts\n"""
+    for post in posts:
+        message = message + str(post).encode("ascii","ignore").decode("ascii")
+    context = ssl.create_default_context()
+    server = smtplib.SMTP(smtp_server, port)
+    server.ehlo()
+    server.starttls()
+    server.ehlo()
+    server.login(sender_email, password)
+    server.sendmail(sender_email, receiver_email, message)
 
 def wait_until(driver, css, wait_time=20):
     sleep_time = 1
@@ -247,38 +269,46 @@ def post_photo(fb_posts, cookies):
 
     driver.get(data['pageUrl'])
     for fb_post in fb_posts:
-        el = wait_until(
-            driver, "ul[data-testid=collapsed_sprouts] li:first-child input[type=file]", 1)
-        css = 'ul[data-testid=collapsed_sprouts] li:first-child input[type=file]'
-        if(el is None):
-            wait_until(driver, "div[data-testid=photo-video-button]").click()
-            el = wait_until(
-                driver, "div[data-testid=media-attachment-buttons] tr:first-child input[type=file]")
-            css = 'div[data-testid=media-attachment-buttons] tr:first-child input[type=file]'
-        el.send_keys(fb_post.local_path)
-        wait_until(
-            driver, "div[data-testid=status-attachment-mentions-input]").click()
-        wait_until(driver, "div[data-testid=media-attachment-photo] img")
-        msg = fb_post.post_msg.encode("ascii","ignore").decode("ascii") if fb_post.post_msg is not None else ""
-        wait_until(
-            driver, "div[data-testid=status-attachment-mentions-input]").send_keys(msg)
-        driver.find_element_by_css_selector(
-            "button[data-testid=react-composer-post-button]").click()
-        time.sleep(5)
+        retry_count = 0
+        while retry_count < 3:
+            try:
+                el = wait_until(
+                    driver, "ul[data-testid=collapsed_sprouts] li:first-child input[type=file]", 1)
+                css = 'ul[data-testid=collapsed_sprouts] li:first-child input[type=file]'
+                if(el is None):
+                    wait_until(driver, "div[data-testid=photo-video-button]").click()
+                    el = wait_until(
+                        driver, "div[data-testid=media-attachment-buttons] tr:first-child input[type=file]")
+                    css = 'div[data-testid=media-attachment-buttons] tr:first-child input[type=file]'
+                el.send_keys(fb_post.local_path)
+                wait_until(
+                    driver, "div[data-testid=status-attachment-mentions-input]").click()
+                wait_until(driver, "div[data-testid=media-attachment-photo] img")
+                msg = fb_post.post_msg.encode("ascii","ignore").decode("ascii") if fb_post.post_msg is not None else ""
+                wait_until(
+                    driver, "div[data-testid=status-attachment-mentions-input]").send_keys(msg)
+                driver.find_element_by_css_selector(
+                    "button[data-testid=react-composer-post-button]").click()
+                time.sleep(5)
+                break
+            except Exception as e:
+                print_log("Failed ..! Retrying ",retry_count)
+                driver.get(data['pageUrl'])
+                retry_count = retry_count + 1
 
 
 def post_FbPosts(_data, fb_posts):
     global data
     data = _data
-    posts = []
     index = 1
     for fb_post in fb_posts:
-        img_name = os.path.join(os.getcwd(),"images","post_"+str(index)+".png")
+        img_name = os.path.join(dir_path,"images","post_"+str(index)+".png")
         url = fb_post.img_src
         img = Image.open(requests.get(url, stream=True).raw)
         img.save(img_name)
         fb_post.local_path = img_name
-        posts.append(fb_post)
         index = index + 1
     cookies = login()
-    post_photo(posts, cookies)
+    post_photo(fb_posts, cookies)
+    send_mail(fb_posts)
+    print_log("******************\n\n")

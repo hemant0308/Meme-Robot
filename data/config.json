@@ -1,7 +1,9 @@
 {
     "deviation": 41400,
+    "fbPassword": "344894ghs",
+    "fbUsername": "rathnayak.fake@gmail.com",
     "indexUrl": "https://www.facebook.com",
-    "lastJobRunAt": 1565090881,
+    "lastJobRunAt": 1565166647,
     "loginUrl": "https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&lwv=110",
     "logoutUrl": "https://www.facebook.com/login/device-based/regular/logout/?button_name=logout&button_location=settings",
     "noOfThreads": 5,
@@ -100,12 +102,10 @@
             "pageName": "UnrealHighCourt"
         }
     ],
-    "password": "344894ghs",
     "postsChunk": 8,
     "timeDuration": 18000,
     "urlFormats": [
         "https://www.facebook.com/pages_reaction_units/more/?page_id={{pageId}}&cursor=%7B%22card_id%22%3A%22page_posts_divider%22%2C%22has_next_page%22%3Atrue%7D&surface=www_pages_home&unit_count={{postsCount}}&fd_referrer_ui_surface=external&fb_dtsg_ag&__user=0&__a=1&__req=l&__be=1&__pc=PHASED%3ADEFAULT&dpr=1&__rev=1000933817&__s=%3A67rsz6%3Aud8z79&__spin_r=1000933817&__spin_b=trunk&__spin_t=1562951267",
         "https://www.facebook.com/pages_reaction_units/more/?page_id={{pageId}}&cursor=%7B%22card_id%22%3A%22page_photos%22%2C%22has_next_page%22%3Atrue%7D&surface=www_pages_home&unit_count={{postsCount}}&referrer&fb_dtsg_ag&__user=0&__a=1&__dyn=7xeUmFoHw_Jxl0BCwDKEyGgS8USQjFCwloS2Sq5-axubwTwywjEKbgS6UnGi4EObxWUPw-DwCx2dzobp94rzK2q26iaAz8gwrUkK3i4o4O5o9F8gAwgazUtCxy1EBg9U8oS263WWwSxu12G12wRyU-3K1tx3ximfy8W8wRK4ovyo89eawGKU989UpxmcG4HBwzwh8-1ay8qG12yE9XAy8aElxWWzU4K8DwGy85i5o9kbxSu68vwlo9oow8m2WE9EjwaO&__req=1&__be=1&__pc=PHASED%3ADEFAULT&dpr=1&__rev=1001017929&__s=vgji0u%3Ajv7zbo%3A21bh9h&__hsi=6721268079952318271-0&__spin_r=1001017929&__spin_b=trunk&__spin_t=1564917173"
-    ],
-    "username": "rathnayak.fake@gmail.com"
+    ]
 }

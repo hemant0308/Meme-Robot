@@ -7,7 +7,8 @@ requires = [
     'selenium',
     'lxml',
     'cssselect',
-    'Pillow'
+    'Pillow',
+    'logging'
 ]
 setup(
     name='meme-robot',

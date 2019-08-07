@@ -16,13 +16,14 @@ import requests
 
 from logger import log
 
-from lxml_utils import get_el_attr_by_css
-from lxml_utils import get_el_text_by_css
-from lxml_utils import get_el_by_css
+from lxml_utils import get_attr_by_css,get_el_text_by_css,get_el_by_css
+from fb_post import FbPost
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 data = {}
 
+# associated_video
+# jsmods ->  require -> VideoDashPrefetchCache
 
 class FbRequest(object):
     """docstring for Fb_request"""
@@ -52,27 +53,33 @@ class FbRequest(object):
                 comment_count = feedback_obj['i18n_comment_count']
                 reaction_count = feedback_obj['i18n_reaction_count']
                 share_count = feedback_obj['i18n_share_count']
-                post.set_feedback(comment_count, reaction_count,
-                                  share_count, page_name)
+                post_type = FbPost.IMAGE if feedback_obj['associated_video'] is None else FbPost.VIDEO
+
+                video_id = None
+                if post_type == FbPost.VIDEO:
+                    video_id = feedback_obj['associated_video']['id']
+
+                post.set_data(comment_count=comment_count, reaction_count=reaction_count,
+                                  share_count=share_count, page_name=page_name,post_type=post_type,video_id=video_id)
+
                 posts.append(post)
             except Exception as e:
-                log.error(pageName)
+                log.error(page_name)
                 log.error(e)
                 pass
             index = index + 1
-        log.error("parsing posts for "+str(page_name) +
-                  " count is : "+str(len(posts)))
         return posts
 
     def get_post(self, post_el):
-        img_src = get_el_attr_by_css(post_el, ".scaledImageFitWidth", "src")
+        img_src = get_attr_by_css(post_el, ".scaledImageFitWidth", "src")
         post_msg = get_el_text_by_css(
             post_el, "div[data-testid='post_message']")
-        posted_time = int(get_el_attr_by_css(
+        posted_time = int(get_attr_by_css(
             post_el, 'abbr[data-utime]', "data-utime"))
+        post_link = get_attr_by_css(post_el, "a[rel=theater]","href")
         # Removing 12:30 hours to match with indian time.
         posted_time = posted_time - (12 * 60 * 60 - 30 * 60)
-        return FbPost(self.deviation, img_src=img_src, post_msg=post_msg, posted_time=posted_time)
+        return FbPost(self.deviation, img_src=img_src, post_msg=post_msg, posted_time=posted_time, post_link=post_link)
 
     def get_page_posts(self, page_id, page_name):
         current_time = time.time()
@@ -103,7 +110,7 @@ class FbRequest(object):
             for post in all_posts:
                 if post.posted_time < lastJobRunAt:
                     exceeded_count = exceeded_count + 1
-                if(post.img_src is not None):
+                if(post.img_src is not None or post.video_id is not None):
                     filtered_posts.append(post)
             if len(filtered_posts) == len(prev_filtered_posts):
                 log.error("No more posts")
@@ -116,10 +123,12 @@ class FbRequest(object):
             posts_count = posts_count+self.postsChunk
         if retry_count >= len(url_formats):
             log.error("Unable to fetch posts from "+str(page_name))
+
         total_posts_array = []
         for post in prev_filtered_posts:
             if post.posted_time >= lastJobRunAt:
                 total_posts_array.append(post)
+        log.error(str(page_name)+" ")
         return total_posts_array
 
     def get_page_posts_by_pageIds(self, pagesData, total_posts_array=[]):
@@ -130,47 +139,6 @@ class FbRequest(object):
 
     def construct_url(self, page_id, posts_count, url_format):
         return url_format.replace("{{pageId}}", page_id).replace("{{postsCount}}", str(posts_count))
-
-
-class FbPost(object):
-    """docstring for FbPost"""
-
-    def __init__(self, deviation, **kwargs):
-        super(FbPost, self).__init__()
-        self.deviation = deviation
-        self.img_src = kwargs["img_src"]
-        self.posted_time = kwargs["posted_time"] + self.deviation
-        self.post_msg = kwargs["post_msg"]
-        self.local_path = None
-
-    def set_feedback(self, comment_count, reaction_count, share_count, page_name):
-        self.comment_count = self.convert_to_number(comment_count)
-        self.share_count = self.convert_to_number(share_count)
-        self.reaction_count = self.convert_to_number(reaction_count)
-        self.page_name = page_name
-        if self.img_src is None:
-            self.reach_count = 0
-        else:
-            self.reach_count = (self.share_count * 2) + \
-                (self.reaction_count) + (self.comment_count * 1.2)
-
-    def convert_to_number(self, reach_count_str="0"):
-        try:
-            reach_count_str = reach_count_str.lower()
-            if 'k' in reach_count_str or 'వే' in reach_count_str:
-                return int(1000 * float(reach_count_str.replace('k', '').replace('వే', '')))
-            elif 'm' in reach_count_str:
-                return int(1000000 * float(reach_count_str.replace('m', '')))
-            else:
-                return int(reach_count_str)
-        except Valueerror as e:
-            log.error(e)
-            return 0
-
-    def __str__(self):
-        return ("Page name : "+self.page_name+"\nImage Src : "+str(self.img_src)+"\nPosted Time : "+str(time.strftime('%m/%d/%Y, %H:%M:%S', time.localtime(self.posted_time)))
-                + "\nTime stamp : "+str(self.posted_time)+"\nShare Count : "+str(self.share_count)+"\nComment Count : "+str(self.share_count)+"\nReaction Count : "+str(self.reaction_count)+"\nPost Message: "+str(self.post_msg)+"\nReach count :"+str(self.reach_count)+"\n")
-
 
 def get_top_posts(data):
     fb_request = FbRequest(data)

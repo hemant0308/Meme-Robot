@@ -1,7 +1,7 @@
 __pycache__
-images
-logs
-env/*
+images/*
+videos/*
+logs/*
 env
 *.egg-info
 *.log

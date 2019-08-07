@@ -8,7 +8,8 @@ import datetime
 from request_utils import get_top_posts
 from selenium_utils import post_photos
 from email_utils import send_mail
-from media_utils import download_img,clean_images
+from media_utils import MediaUtils
+from fb_post import FbPost
 from logger import log
 
 def main():
@@ -23,16 +24,21 @@ def main():
 
         top_posts = get_top_posts(data)
 
+        media_utils = MediaUtils(data)
         for fb_post in top_posts:
-            fb_post.local_path = download_img(fb_post.img_src)
+            if fb_post.post_type == FbPost.VIDEO:
+                fb_post.media_path = media_utils.download_video(fb_post)
+            else:
+                fb_post.media_path = media_utils.download_img(fb_post)
 
         for post in top_posts:
             log.error(post)
 
         if(len(top_posts) > 0):
             post_photos(data,top_posts)
-
-        send_mail(top_posts)
+        if(data['sendMail']):
+            send_mail(top_posts)
+            log.error("Mail sent")
 
         log.error("Total posts posted : "+str(len(top_posts)))
         log.error("Time taken : "+str(time.time() - start_time))
@@ -41,7 +47,7 @@ def main():
         with open('data/config.json', 'w') as f:
              json.dump(data, f, indent=4, sort_keys=True)
         
-        clean_images()
+        media_utils.clean_media()
 
     except Exception as e:
         raise e

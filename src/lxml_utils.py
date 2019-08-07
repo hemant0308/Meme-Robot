@@ -12,6 +12,6 @@ def get_el_by_css(el, css):
             return elems[0]
 
 
-def get_el_attr_by_css(el, css, attribute):
+def get_attr_by_css(el, css, attribute):
     el = get_el_by_css(el, css)
     return el.get(attribute) if el is not None else None

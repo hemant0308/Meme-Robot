@@ -8,7 +8,7 @@ from selenium.webdriver.chrome.options import Options
 import requests
 
 from logger import log
-from media_utils import download_img
+from fb_post import FbPost
 
 
 class FbPostUtil(object):
@@ -66,7 +66,7 @@ class FbPostUtil(object):
                         el = self.wait_until(
                             driver, "div[data-testid=media-attachment-buttons] tr:first-child input[type=file]")
                         css = 'div[data-testid=media-attachment-buttons] tr:first-child input[type=file]'
-                    el.send_keys(fb_post.local_path)
+                    el.send_keys(fb_post.media_path)
                     self.wait_until(
                         driver, "div[data-testid=status-attachment-mentions-input]").click()
                     self.wait_until(

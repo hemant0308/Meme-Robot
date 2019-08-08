@@ -6,7 +6,7 @@ import datetime
 
 
 from request_utils import get_top_posts
-from selenium_utils import post_photos
+from selenium_utils import FbPostUtil
 from email_utils import send_mail
 from media_utils import MediaUtils
 from fb_post import FbPost
@@ -25,17 +25,24 @@ def main():
         top_posts = get_top_posts(data)
 
         media_utils = MediaUtils(data)
+
+        fb_posts = []
         for fb_post in top_posts:
-            if fb_post.post_type == FbPost.VIDEO:
-                fb_post.media_path = media_utils.download_video(fb_post)
-            else:
-                fb_post.media_path = media_utils.download_img(fb_post)
+            try:
+                if fb_post.post_type == FbPost.VIDEO:
+                    fb_post.media_path = media_utils.download_video(fb_post)
+                else:
+                    fb_post.media_path = media_utils.download_img(fb_post)
+                fb_posts.append(fb_post)
+            except Exception as e:
+                pass
 
         for post in top_posts:
             log.error(post)
 
         if(len(top_posts) > 0):
-            post_photos(data,top_posts)
+            fb_utils = FbPostUtil(data)
+            fb_utils.post_photos(fb_posts)
         if(data['sendMail']):
             send_mail(top_posts)
             log.error("Mail sent")
@@ -48,11 +55,13 @@ def main():
              json.dump(data, f, indent=4, sort_keys=True)
         
         media_utils.clean_media()
+        print(str(datetime.datetime.now())+" :: success")
 
     except Exception as e:
         raise e
         print(e)
-    print(datetime.datetime.now()," :: Done successfully")
+        print(str(datetime.datetime.now())+" :: Failed")
+    log.error(str(datetime.datetime.now())+" :: Done successfully")
 
 if __name__ == '__main__':
     main()

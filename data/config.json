@@ -1,9 +1,9 @@
 {
     "deviation": 41400,
-    "fbPassword": "344894ghs",
+    "fbPassword": "rath.nayak",
     "fbUsername": "rathnayak.fake@gmail.com",
     "indexUrl": "https://www.facebook.com",
-    "lastJobRunAt": 1565100873,
+    "lastJobRunAt": 1565267026,
     "loginUrl": "https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&lwv=110",
     "logoutUrl": "https://www.facebook.com/login/device-based/regular/logout/?button_name=logout&button_location=settings",
     "maxImagesToKeep": 100,

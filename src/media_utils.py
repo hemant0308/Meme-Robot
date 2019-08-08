@@ -37,6 +37,7 @@ class MediaUtils(object):
     def download_video(self,fb_post):
         log.error(fb_post)
         video_url = self.build_url(fb_post.page_name,fb_post.video_id)
+        log.error(video_url)
         response = requests.get(video_url)
         html_text = response.content.decode("utf-8")
         el = parser.fromstring(html_text)
@@ -60,11 +61,11 @@ class MediaUtils(object):
         if(len(images) > self.maxImagesToKeep):
             images.sort()
             for i in range(len(images) - self.maxImagesToKeep):
-                os.unlink(images[i])
+                os.unlink(os.path.join('images',images[i]))
 
     def clean_videos(self):
-        images = os.listdir("videos/")
-        if(len(images) > self.maxVideosToKeep):
-            images.sort()
-            for i in range(len(images) - self.maxVideosToKeep):
-                os.unlink(images[i])
+        videos = os.listdir("videos/")
+        if(len(videos) > self.maxVideosToKeep):
+            videos.sort()
+            for i in range(len(videos) - self.maxVideosToKeep):
+                os.unlink(os.path.join('videos',videos[i]))

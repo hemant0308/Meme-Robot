@@ -1,12 +1,33 @@
+import sys
+import os
+
 import logging
 from logging.handlers import TimedRotatingFileHandler
 
 
-logging.basicConfig(format='%(asctime)s %(message)s', filemode='w')
+logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',datefmt='%Y-%m-%d %H:%M:%S')
 log = logging.getLogger()
 log.setLevel(logging.ERROR)
 
-rotater = TimedRotatingFileHandler("logs/meme-robot.log", when="midnight", interval=1)
+
+formatter = logging.Formatter(fmt='%(asctime)s %(levelname)-8s %(message)s',
+                                  datefmt='%Y-%m-%d %H:%M:%S')
+
+log = logging.getLogger("meme-robot")
+
+log.setLevel(logging.DEBUG)
+
+screen_handler = logging.StreamHandler(stream=sys.stdout)
+screen_handler.setFormatter(formatter)
+log.addHandler(screen_handler)
+
+dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+filename = os.path.join(dir_path,'logs','meme-robot.log')
+
+handler = logging.FileHandler(filename, mode='w')
+handler.setFormatter(formatter)
+log.addHandler(handler)
+
+rotater = TimedRotatingFileHandler(filename, when="midnight", interval=1)
 rotater.suffix = "%Y%m%d"
 log.addHandler(rotater)
-

@@ -19,8 +19,6 @@ from logger import log
 from lxml_utils import get_attr_by_css,get_el_text_by_css,get_el_by_css
 from fb_post import FbPost
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-data = {}
 
 # associated_video
 # jsmods ->  require -> VideoDashPrefetchCache

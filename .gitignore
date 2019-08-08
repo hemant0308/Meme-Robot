@@ -1,6 +1,7 @@
 __pycache__
 images/*
 videos/*
+errors/*
 logs/*
 env
 *.egg-info

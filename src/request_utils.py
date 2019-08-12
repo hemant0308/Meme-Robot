@@ -31,7 +31,7 @@ class FbRequest(object):
         for key in config:
             setattr(self, key, config[key])
 
-    def parse_str(self, raw_str, page_name):
+    def parse_str(self, raw_str, fb_post):
         posts = []
         json_data = json.loads(raw_str)
         html_str = json_data['domops'][0][3]['__html']
@@ -57,8 +57,10 @@ class FbRequest(object):
                 if post_type == FbPost.VIDEO:
                     video_id = feedback_obj['associated_video']['id']
 
+                post_url = feedback_obj['url']
+
                 post.set_data(comment_count=comment_count, reaction_count=reaction_count,
-                                  share_count=share_count, page_name=page_name,post_type=post_type,video_id=video_id)
+                                  share_count=share_count, page_name=fb_post['pageName'],post_type=post_type,video_id=video_id,post_url=post_url,priority=fb_post['priority'])
 
                 posts.append(post)
             except Exception as e:
@@ -79,13 +81,15 @@ class FbRequest(object):
         posted_time = posted_time - (12 * 60 * 60 - 30 * 60)
         return FbPost(self.deviation, img_src=img_src, post_msg=post_msg, posted_time=posted_time, post_link=post_link)
 
-    def get_page_posts(self, page_id, page_name):
+    def get_page_posts(self, page):
         current_time = time.time()
         prev_filtered_posts = []
         is_all_fetched = False
         posts_count = self.postsChunk
         lastJobRunAt = self.lastJobRunAt
         url_formats = self.urlFormats
+        page_name = page['pageName']
+        page_id = page['pageId']
         retry_count = 0
         while not is_all_fetched and retry_count < len(url_formats):
             url = self.construct_url(
@@ -97,7 +101,7 @@ class FbRequest(object):
             raw_str = raw_str.replace('for (;;);', '')
             all_posts = []
             try:
-                all_posts = self.parse_str(raw_str, page_name)
+                all_posts = self.parse_str(raw_str, page)
             except Exception as e:
                 retry_count = retry_count + 1
                 print("Retrying second time for ", page_name)
@@ -131,7 +135,9 @@ class FbRequest(object):
 
     def get_page_posts_by_pageIds(self, pagesData, total_posts_array=[]):
         for page in pagesData:
-            posts = self.get_page_posts(page['pageId'], page['pageName'])
+            if not 'priority' in page:
+                page['priority'] = 1
+            posts = self.get_page_posts(page)
             for post in posts:
                 total_posts_array.append(post)
 

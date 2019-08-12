@@ -19,12 +19,12 @@ log.setLevel(logging.DEBUG)
 
 screen_handler = logging.StreamHandler(stream=sys.stdout)
 screen_handler.setFormatter(formatter)
-log.addHandler(screen_handler)
+#log.addHandler(screen_handler)
 
 dir_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 filename = os.path.join(dir_path,'logs','meme-robot.log')
 
-handler = logging.FileHandler(filename, mode='w')
+handler = logging.FileHandler(filename, mode='a+')
 handler.setFormatter(formatter)
 log.addHandler(handler)
 

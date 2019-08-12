@@ -35,15 +35,23 @@ class MediaUtils(object):
             return os.path.join(dir_path,"videos",str(time.time())+".mp4")
 
     def download_video(self,fb_post):
-        log.error(fb_post)
-        video_url = self.build_url(fb_post.page_name,fb_post.video_id)
-        log.error(video_url)
-        response = requests.get(video_url)
-        html_text = response.content.decode("utf-8")
-        el = parser.fromstring(html_text)
-        download_link = get_attr_by_css(el,'ul.download-options li:nth-child(2) a','href')
         file_name = self.get_filename(self.VIDEO)
-        self.download_file(download_link,file_name)
+        retry_count = 0
+        while True:
+            try:
+                video_url = self.build_url(fb_post.page_name,fb_post.video_id)
+                response = requests.get(video_url)
+                html_text = response.content.decode("utf-8")
+                el = parser.fromstring(html_text)
+                download_link = get_attr_by_css(el,'ul.download-options li:nth-child(2) a','href')
+                self.download_file(download_link,file_name)
+                break
+            except Exception as e:
+                if retry_count > 3:
+                    raise Exception("Max retries exceeded to download video "+str(fb_post.video_id))
+                retry_count = retry_count + 1
+                log.error("Error in downloading video. Retrying ("+str(retry_count)+")")
+
         return file_name
 
     def download_file(self,url,file_name):
@@ -69,3 +77,10 @@ class MediaUtils(object):
             videos.sort()
             for i in range(len(videos) - self.maxVideosToKeep):
                 os.unlink(os.path.join('videos',videos[i]))
+
+    def clean_screeshots(self):
+        videos = os.listdir("errors/")
+        if(len(videos) > self.maxVideosToKeep):
+            videos.sort()
+            for i in range(len(videos) - self.maxImagesToKeep):
+                os.unlink(os.path.join('errors',videos[i]))

@@ -22,27 +22,36 @@ def main():
         with open(os.path.join(data_dir,"data/config.json")) as f:
             data = json.load(f)
 
+        with open(os.path.join(data_dir,"data/fbPosts.json")) as f:
+            previous_posts = json.load(f)
+
         top_posts = get_top_posts(data)
 
         media_utils = MediaUtils(data)
-
-        fb_posts = []
+        fb_post_utils = FbPostUtil(data)
         for fb_post in top_posts:
-            try:
-                if fb_post.post_type == FbPost.VIDEO:
-                    fb_post.media_path = media_utils.download_video(fb_post)
-                else:
-                    fb_post.media_path = media_utils.download_img(fb_post)
-                fb_posts.append(fb_post)
-            except Exception as e:
-                pass
-
-        for post in top_posts:
-            log.error(post)
-
-        if(len(top_posts) > 0):
-            fb_utils = FbPostUtil(data)
-            fb_utils.post_photos(fb_posts)
+            log.error(fb_post)
+            is_posted = False
+            for prev_post in previous_posts:
+                if prev_post['post_url'] == fb_post.post_url:
+                    is_posted = True
+                    break
+            if not is_posted:
+                try:
+                    if fb_post.post_type == FbPost.VIDEO:
+                        fb_post.media_path = media_utils.download_video(fb_post)
+                    else:
+                        fb_post.media_path = media_utils.download_img(fb_post)
+                    fb_post_utils.post_media(fb_post)
+                    fb_post.mark_as_done()
+                    previous_posts.append(fb_post.get_dict())
+                    log.error("Success")
+                except Exception as e:
+                    raise e
+                    log.error("Failure")
+            else:
+                log.error("This post posted already")
+        fb_post_utils.exit()
         if(data['sendMail']):
             send_mail(top_posts)
             log.error("Mail sent")
@@ -53,6 +62,14 @@ def main():
         data["lastJobRunAt"] = int(time.time())
         with open('data/config.json', 'w') as f:
              json.dump(data, f, indent=4, sort_keys=True)
+
+        previous_posts_bkp = []
+        for prev_post in previous_posts:
+            if prev_post['completed_time'] > time.time() - data["maxPostsToKeep"]:
+                previous_posts_bkp.append(prev_post)
+
+        with open(os.path.join(data_dir,"data/fbPosts.json"), 'w') as f:
+             json.dump(previous_posts_bkp, f, indent=4, sort_keys=True)
         
         media_utils.clean_media()
         print(str(datetime.datetime.now())+" :: success")

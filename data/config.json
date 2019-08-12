@@ -3,105 +3,129 @@
     "fbPassword": "rath.nayak",
     "fbUsername": "rathnayak.fake@gmail.com",
     "indexUrl": "https://www.facebook.com",
-    "lastJobRunAt": 1565267026,
+    "lastJobRunAt": 1565600158,
     "loginUrl": "https://www.facebook.com/login/device-based/regular/login/?login_attempt=1&lwv=110",
     "logoutUrl": "https://www.facebook.com/login/device-based/regular/logout/?button_name=logout&button_location=settings",
     "maxImagesToKeep": 100,
+    "maxPostsToKeep": 259200,
     "maxVideosToKeep": 20,
     "noOfThreads": 10,
-    "pageUrl": "https://www.facebook.com/Meme-Robot-357645674920671",
+    "pageUrl": "https://www.facebook.com/Memerobot",
     "pagesData": [
         {
             "pageId": "467199086709317",
-            "pageName": "Thyview"
+            "pageName": "Thyview",
+            "priority": 1
         },
         {
             "pageId": "153973581420272",
-            "pageName": "socalledcinema"
+            "pageName": "socalledcinema",
+            "priority": 1
         },
         {
             "pageId": "187402388011546",
-            "pageName": "dispagevllentertainuu"
+            "pageName": "dispagevllentertainuu",
+            "priority": 1
         },
         {
             "pageId": "141978656476472",
-            "pageName": "AitheyEntiV2"
+            "pageName": "AitheyEntiV2",
+            "priority": 0.9
         },
         {
             "pageId": "2206019773010445",
-            "pageName": "AyyaBaboy"
+            "pageName": "AyyaBaboy",
+            "priority": 1
         },
         {
             "pageId": "171099957157706",
-            "pageName": "ComiccRayudu"
+            "pageName": "ComiccRayudu",
+            "priority": 1
         },
         {
             "pageId": "363598167440039",
-            "pageName": "Thugwala"
+            "pageName": "Thugwala",
+            "priority": 1
         },
         {
             "pageId": "311308786011760",
-            "pageName": "TeluguSwag.TS"
+            "pageName": "TeluguSwag.TS",
+            "priority": 1
         },
         {
             "pageId": "457127117670835",
-            "pageName": "CAPDT"
+            "pageName": "CAPDT",
+            "priority": 0.9
         },
         {
             "pageId": "1017004565136986",
-            "pageName": "neekundirothugs"
+            "pageName": "neekundirothugs",
+            "priority": 1
         },
         {
             "pageId": "177158955785723",
-            "pageName": "Controversyy"
+            "pageName": "Controversyy",
+            "priority": 1
         },
         {
             "pageId": "179324409365685",
-            "pageName": "funclovita"
+            "pageName": "funclovita",
+            "priority": 1
         },
         {
             "pageId": "1349147275176186",
-            "pageName": "etctelugu"
+            "pageName": "etctelugu",
+            "priority": 1
         },
         {
             "pageId": "408653969685800",
-            "pageName": "/CO-FUN-408653969685800"
+            "pageName": "/CO-FUN-408653969685800",
+            "priority": 1
         },
         {
             "pageId": "228495601258184",
-            "pageName": "Arey-Thuppas-Yedava-228495601258184"
+            "pageName": "Arey-Thuppas-Yedava-228495601258184",
+            "priority": 1
         },
         {
             "pageId": "473179426757346",
-            "pageName": "teeyagundi.co.in"
+            "pageName": "teeyagundi.co.in",
+            "priority": 1
         },
         {
             "pageId": "250774718957802",
-            "pageName": "yatakaramofficial"
+            "pageName": "yatakaramofficial",
+            "priority": 1
         },
         {
             "pageId": "196017361098789",
-            "pageName": "TeamArehoo"
+            "pageName": "TeamArehoo",
+            "priority": 1
         },
         {
             "pageId": "1515871602074952",
-            "pageName": "SarcasmLol"
+            "pageName": "SarcasmLol",
+            "priority": 0.4
         },
         {
             "pageId": "1471399346285240",
-            "pageName": "strictlyformenofficial"
+            "pageName": "strictlyformenofficial",
+            "priority": 0.5
         },
         {
             "pageId": "261341130676448",
-            "pageName": "ManamThopuluEhe"
+            "pageName": "ManamThopuluEhe",
+            "priority": 1
         },
         {
             "pageId": "1591656047731176",
-            "pageName": "ComedyTonic"
+            "pageName": "ComedyTonic",
+            "priority": 1
         },
         {
             "pageId": "1715610998737825",
-            "pageName": "UnrealHighCourt"
+            "pageName": "UnrealHighCourt",
+            "priority": 1
         }
     ],
     "postsChunk": 8,
